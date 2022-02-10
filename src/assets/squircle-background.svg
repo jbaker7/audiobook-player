@@ -1,0 +1,14 @@
+<svg width="100px" height="100px" viewBox="-304 -304 580 580" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="0" y1="-288" x2="0" y2="288" id="gradient-0" gradientTransform="matrix(0.707992, -0.706221, 0.8424, 0.844514, -15.261412, -15.892116)">
+      <stop offset="0" style="stop-color: #BABEC2;"></stop>
+      <stop offset="1" style="stop-color: rgb(243, 245, 247);"></stop>
+    </linearGradient>
+    <filter id="gaussian-blur-filter-0" color-interpolation-filters="sRGB" x="-500%" y="-500%" width="1000%" height="1000%" bx:preset="gaussian-blur 1 5.3">
+      <feGaussianBlur stdDeviation="2.3 2.3" edgeMode="none"></feGaussianBlur>
+    </filter>
+  </defs>
+  <title>Squircle: x to 4th plus y to 4th equals radius to 4th</title>
+  <path stroke-width="4.04" d="M -14 274 C 112.2 274 182.356 274 228.178 228.178 C 274 182.356 274 112.2 274 -14 C 274 -140.2 274 -210.356 228.178 -256.178 C 182.356 -302 112.2 -302 -14 -302 C -140.2 -302 -210.356 -302 -256.178 -256.178 C -302 -210.356 -302 -140.2 -302 -14 C -302 112.2 -302 182.356 -256.178 228.178 C -210.356 274 -140.2 274 -14 274 Z" style="fill: url(#gradient-0); paint-order: fill; 
+  filter: url(#gaussian-blur-filter-0);"></path>
+</svg>

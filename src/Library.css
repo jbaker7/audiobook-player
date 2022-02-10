@@ -1,0 +1,233 @@
+.library {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    padding: 4px;
+    background: #DEE1E3;
+    color: #666;
+    border-radius: 10px;
+    box-shadow: inset 1px 1px 4px 0px #00000022, 
+                1px 1px 1px 0px #ffffff;
+    overflow-y: auto;
+}
+
+.library .folder {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+}
+.library .folder::after {
+    position: absolute;
+    content: " ";
+    bottom: 0rem;
+    left:50%;
+    transform:translate(-50%, 0);
+    height: 2px;
+    width: 90%;
+    border-radius: 1px;
+    box-shadow: inset 1px 1px 4px 0px #ffffff33, 
+                1px 1px 1px 0px #00000011;
+}
+.library .folder:last-child::after {
+    height: 0;
+}
+
+.library .expanded {
+    margin-bottom: 0.5rem;
+    background-color: #00000009;
+    color: #000;
+    box-shadow: inset 1px 1px 4px 0px #EF472F44, 
+      1px 1px 1px 0px #ffffff;
+}
+.library .expanded::after {
+    height: 0;
+}
+
+
+
+.library .folder-heading {
+    padding: 0rem;
+    display: grid;
+    grid-template-columns: 7rem auto;
+}
+
+.library .folder:first-of-type .folder-heading {
+    border-radius: 10px 10px 0 0;
+}
+
+.library .expanded .folder-heading {
+    border-radius: 10px 10px 0 0;
+}
+
+.library .folder-heading:hover {
+    background-color: #00000011;
+    background-image: url('./assets/arrow-down.svg');
+    background-size: 1rem;
+    background-position: bottom center;
+    background-repeat: no-repeat;
+}
+
+.library .expanded .folder-heading:hover {
+    background-color: #00000011;
+    background-image: url('./assets/arrow-up.svg');
+    background-size: 1rem;
+    background-position: bottom center;
+    background-repeat: no-repeat;
+}
+
+.library .folder-image {
+    position: relative;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 5rem;
+    width: 5rem;
+    cursor: pointer;
+    padding: 2px;
+    margin: 1rem;
+    background-image: url('./assets/squircle-background.svg');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: drop-shadow(5px 5px 0.4rem #00000022) 
+        drop-shadow(-5px -5px 0.4rem #fff);
+}
+
+.library .folder-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    -webkit-mask-image: url('./assets/squircle-mask.svg');
+    mask-image: url('./assets/squircle-mask.svg');
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+}
+
+
+.library .folder-heading:hover .folder-image.play::before {
+    content: " ";
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0.6;
+    filter: brightness(0.2);
+    background: no-repeat center/100% url('./assets/squircle-background.svg');
+}
+
+.library .folder-heading:hover .folder-image.play::after {
+    content: " ";
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: no-repeat center/50% url('./assets/play-light.svg');
+}
+
+.library .folder-heading:hover .book-image.pause::before {
+    content: " ";
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0.6;
+    filter: brightness(0.2);
+    background: no-repeat center/100% url('./assets/squircle-background.svg');
+}
+
+.library .folder-heading:hover .folder-image.pause::after {
+    content: " ";
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: no-repeat center/50% url('./assets/pause-light.svg');
+}
+
+.library .folder-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.library .album-name {
+    color: #666;
+    font-size: 1.2rem;
+    font-family: 'Montserrat Medium', sans-serif;
+}
+
+.library .album-artist {
+    color: #888;
+    font-family: 'Montserrat Regular', sans-serif;
+    font-size: 1rem;
+}
+
+.library .tracks {
+    margin-left: 5px;
+    margin-right: 2px;
+    margin-top: 0rem;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    color: #444;
+    transition: all ease 0.2s; 
+}
+
+.library .tracks ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.library .tracks ul li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.1rem 0.5rem 0.1rem 1.2rem;
+    border-top: 1px solid #CACDCF;
+}
+
+.library .tracks ul li:hover {
+    color: #000;
+    background-color: #CED1D3;
+    background-image: url('./assets/play.svg');
+    background-size: 1rem;
+    background-position: center left;
+    background-repeat: no-repeat;
+}
+
+.library .tracks .track-name {
+    color: #888;
+    font-family: 'Montserrat Regular', sans-serif;
+    font-size: 1rem;
+}
+
+.library .tracks .library-track-length {
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+}
+
+.library .tracks ul li.playing {
+    font-family: 'Montserrat Medium';
+    border-radius: 3px;
+    margin-right: 2px;
+    border-top: 0;
+    box-shadow: 1px 1px 4px 0px #EF472F44;
+    background: #F2F5FA;
+}
+
+.library .tracks ul li:last-of-type {
+    border-radius: 0 0 10px 10px;
+}
