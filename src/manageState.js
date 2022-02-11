@@ -1,76 +1,108 @@
-const fs = require('fs');
+import {existsSync} from 'fs';
+import {readFile, writeFile} from 'fs/promises';
 const path = require('path');
 
 class StateManager {
 
     constructor(appPath) {
         this.appPath = appPath;
-        if(fs.existsSync(path.join(this.appPath, "settings.json"))) {
-            this.readStateFile();
-        }
-        else {
-            this.createStateFile();
-        }
     }
 
-    setLibraryFolder(folder) {
-        this.currentState = {...this.currentState, libraryFolder: folder};
+    getPreferences() {
+        return this.currentState.preferences;
+    }
+    setPreferences(newPreferences) {
+        
+        for (const [pref, value] of Object.entries(newPreferences)) {
+            this.currentState.preferences[pref] = value;
+        }
+
         this.updateStateFile();
     }
 
-    getLibraryFolder() {
-        let currentLibraryFolder = this.currentState['libraryFolder'];
-        return currentLibraryFolder;
+
+    get libraryIsVisible() {
+        return this.currentState.preferences.libraryIsVisible;
+    }
+    set libraryIsVisible(isVisible) {
+        this.currentState.preferences.libraryIsVisible = isVisible;
+        this.updateStateFile();
+    }
+
+
+    get libraryFolder() {
+        return this.currentState.preferences.libraryFolder;
+    }
+    set libraryFolder(folder) {
+        this.currentState.preferences.libraryFolder = folder;
+        this.updateStateFile();
+    }
+
+    getPlaybackPosition(file) {
+        if(this.currentState.playBackPositions[file]) {
+            return this.currentState.playBackPositions[file];
+        }
+        else {
+            return false;
+        }
+    }
+    setPlaybackPosition(file, position) {
+
+        if(position < 5) {
+            // Playback finished or didn't progress far enough to save, clear saved position.
+            delete this.currentState.playBackPositions[file]; 
+        }
+        else {
+            // Playback didn't finished, save position.
+            this.currentState.playBackPositions[file] = position; 
+        }
+        
+        this.updateStateFile();
     }
 
     updateStateFile() {
-        fs.writeFile(path.join(this.appPath, "settings.json"), 
-            JSON.stringify(this.currentState), 
-            {encoding: 'utf-8'}, (err) => {
-                if (!err) {
-                    console.log("State file updated.");
-                  
-                }
-                else {
-                    console.log("Unable to update state file.");
-                    console.log(err);
-                }
-            }
-        );
+        
+        writeFile(path.join(this.appPath, "settings.json"), JSON.stringify(this.currentState), {encoding: 'utf-8'})
+            .then(() => console.log("State file updated."))
+            .catch(err => {
+                console.log(err);
+                console.log("Unable to update state file.");
+            });
     }
 
-    readStateFile() {
-        fs.readFile(path.join(this.appPath, "settings.json"), {encoding: 'utf-8'}, (err, data) => {
-            if (!err) {
-                this.currentState = JSON.parse(data);
+    initializeState = () => {
+
+        return new Promise((resolve, reject) => {
+            let emptyState = {
+                preferences: {
+                    libraryFolder: null,
+                    playerVolume: 0.4,
+                    libraryIsVisible: true
+                },
+                playBackPositions: {},
+            }
+            
+            if(existsSync(path.join(this.appPath, "settings.json"))) {
+                readFile(path.join(this.appPath, "settings.json"), {encoding: 'utf-8'})
+                .then(data => this.currentState = JSON.parse(data))
+                .then(() => resolve("Preferences loaded."))
+                .catch(err => {
+                    this.currentState = emptyState;
+                    console.log(err);
+                    resolve("Couldn't load preferences. Using defaults");
+                })
             }
             else {
-                console.log(err);
-            }
-        });
-    }
-
-    createStateFile() {
-        let emptyState = {
-            libraryFolder: null,
-            playBackPositions: null
-        }
-
-        fs.writeFile(path.join(this.appPath, "settings.json"), 
-            JSON.stringify(emptyState), 
-            {encoding: "utf8"},
-            (err) => {
-                if (!err) {
-                    console.log("New state file created.");
-                    this.currentState = emptyState;
-                }
-                else {
-                    console.log("Unable to create new state file.");
+                this.currentState = emptyState;
+                writeFile(path.join(this.appPath, "settings.json"), JSON.stringify(emptyState), {encoding: "utf8"})
+                .then(() => resolve("New preference file created."))
+                .catch(err => {
                     console.log(err);
-                }
+                    resolve("Couldn't create new preference file. Using defaults");
+                })
             }
-        );
+        })
     }
 }
 
-module.exports = StateManager;
+export default StateManager;

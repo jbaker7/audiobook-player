@@ -1,10 +1,12 @@
 const {app, BrowserWindow, Menu, dialog, ipcMain} = require('electron');
-const StateManager = require('./manageState.js');
+import StateManager from './manageState.js';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
+
+let currentState = new StateManager(app.getPath('userData'));
 
 let applicationMenuTemplate = [
   {
@@ -19,7 +21,6 @@ let applicationMenuTemplate = [
     submenu: [
         {label: "Show Library",
           click: toggleLibraryView,
-          checked: true,
           id: "library-view-status",
           type: 'checkbox'},
         {label: "Reload",
@@ -28,12 +29,14 @@ let applicationMenuTemplate = [
   }
 ];
 
-let currentState = new StateManager(app.getPath('userData'));
-
 const createWindow = () => {
   // Create the browser window.
+  let windowWidth = 800;
+  if(!currentState.libraryIsVisible) {
+    windowWidth = 400;
+  }
   const mainWindow = new BrowserWindow({
-    width: 800,
+    width: windowWidth,
     height: 600,
     webPreferences: {
       nodeIntegration: true,
@@ -48,16 +51,41 @@ const createWindow = () => {
 
   let menu = Menu.buildFromTemplate(applicationMenuTemplate);
   Menu.setApplicationMenu(menu);
+  menu.getMenuItemById("library-view-status").checked = currentState.libraryIsVisible;
+
+  mainWindow.on('close', (e) => { //Let renderer know it's closing so it can send back preferences.
+    mainWindow.webContents.send('closing', 'Application is closing.') 
+  })
 };
 
-ipcMain.on('prefs', (event, arg) => {
-  event.reply('appPathReply', currentState.getLibraryFolder())
+ipcMain.on('prefs', (event, [action, prefs]) => { //Set listener for when preferences are requestion or should be updated.
+
+  if (action === "get") {
+    event.reply('prefReply', currentState.getPreferences());
+  }
+
+  if (action === "set") {
+    currentState.setPreferences(prefs);
+  }
 })
+
+ipcMain.on('playback', (event, [file, position]) => { //Set listener for when playback position should be updated.
+  
+  if (typeof position === "number") {
+    currentState.setPlaybackPosition(file, position);
+  }
+  else {
+    let savedPosition = currentState.getPlaybackPosition(file);
+    event.returnValue = savedPosition;
+  }
+})
+
 
 function toggleLibraryView(item, browserWindow, event) {
 
   let [width, height] = browserWindow.getSize();
   browserWindow.webContents.send("viewChange", item.checked);
+  currentState.libraryIsVisible = item.checked;
 
   if(!item.checked) {
     browserWindow.setSize(width / 2, height);
@@ -67,38 +95,45 @@ function toggleLibraryView(item, browserWindow, event) {
   }
 }
 
-
 function chooseFolder(item, browserWindow, event) {
   dialog.showOpenDialog({
     properties: ['openDirectory']
   }).then(result => {
     if (!result.canceled) {
-      currentState.setLibraryFolder(result.filePaths[0])
-      browserWindow.webContents.send("libraryChange", result.filePaths[0])
+      currentState.libraryFolder = result.filePaths[0];
+      browserWindow.webContents.send("libraryChange", result.filePaths[0]);
     }
   }).catch(err => {
     console.log(err)
   })
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
+currentState.initializeState()
+  .then((data) => {
+    console.log(data)
+    if (app.isReady()) {
+      createWindow();
+    }
+    else {
+      app.on('ready', createWindow);
 
-app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
-});
+      // Quit when all windows are closed, except on macOS. There, it's common
+      // for applications and their menu bar to stay active until the user quits
+      // explicitly with Cmd + Q.
+      app.on('window-all-closed', () => {
+        if (process.platform !== 'darwin') {
+          app.quit();
+        }
+      });
+      
+      app.on('activate', () => {
+        // On OS X it's common to re-create a window in the app when the
+        // dock icon is clicked and there are no other windows open.
+        if (BrowserWindow.getAllWindows().length === 0) {
+          createWindow();
+        }
+      });
+    }
+  })
+  .catch((data) => console.log(data))

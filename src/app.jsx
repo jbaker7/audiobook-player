@@ -38,28 +38,37 @@ function App() {
 
     const [playbackSpeed, setPlaybackSpeed] = useState(1);
     const [playerVolume, setPlayerVolume] = useState(0.4);
+    const playerVolumeRef = useRef(); // Must also use ref to prevent the main process from receiving stale values.
 
     const [volumeControlIsVisible, setVolumeControlIsVisible] = useState(false);
     const [libraryIsVisible, setLibraryIsVisible] = useState(true);
 
     const [libraryContents] = useLibrary(libraryFolder);
 
-
     useEffect(() => {
 
-        ipcRenderer.send("prefs", "request current user preferences");
+        ipcRenderer.send("prefs", ["get"]); //Request preferences from main process on load.
+
+        ipcRenderer.on("prefReply", (event, preferences) => {   //Wait for main process to send preferences,
+            setLibraryFolder(preferences.libraryFolder);        //Then load them into state.
+            setPlayerVolume(preferences.playerVolume);
+            setLibraryIsVisible(preferences.libraryIsVisible);
+        });
 
         ipcRenderer.on("libraryChange", (event, arg) => {
             setLibraryFolder(arg)
         });
-        ipcRenderer.on("appPathReply", (event, arg) => {
-            setLibraryFolder(arg)
-        });
+
         ipcRenderer.on("viewChange", (event, arg) => {
             setLibraryIsVisible(arg)
         });
+
+        ipcRenderer.on("closing", (event, arg) => 
+            event.sender.send("prefs", ["set", {"playerVolume": parseInt(playerVolumeRef.current.value)}])
+        );
+
     }, [])
-    
+
     function changePlaybackSpeed(e) {
 
         let speed = parseFloat(e.target.value);
@@ -91,12 +100,18 @@ function App() {
         setPlayerVolume(newVolume);
     }
 
+    function savePlaybackPosition(file, position) {
+        ipcRenderer.send("playback", [file, position]);
+    }
+
     function handlePlayPause(folder, track) {
 
         if (nowPlayingFolder !== folder) {
             if (nowPlayingFolder) {
                 if (playlistRef.current[indexRef.current].howl) {
-                    playlistRef.current[indexRef.current].howl.stop();
+                    let playing = playlistRef.current[indexRef.current];
+                    savePlaybackPosition(playing.file, playing.howl.seek());
+                    playing.howl.stop();
                 }
             }
             setNewPlaylist(libraryContents.find(folders => folders.folderName === folder));
@@ -117,6 +132,15 @@ function App() {
         }
     }
 
+    function setNewPlaylist(newPlaylist) {
+
+        let formattedPlaylist = newPlaylist["files"].map(file => ({file: file, howl: null}));
+
+        setNowPlayingFolder(newPlaylist.folderName);
+        playlistRef.current = formattedPlaylist;
+        indexRef.current = 0;
+    }
+
     function play(index) {
 
         let sound;
@@ -134,6 +158,11 @@ function App() {
                 html5: true,
                 rate: playbackSpeed,
                 onplay: function() {
+                    // Check if there is already a saved start position. If so, begin playback there.
+                    let startPosition = ipcRenderer.sendSync("playback", [playlistRef.current[index].file]);
+                    if(startPosition) {
+                        seek(startPosition);
+                    }
                     setIsPlaying(true);
                     setNowPlayingDuration(sound.duration());
                     nowPlayingInterval = setInterval(step, 1000)
@@ -157,15 +186,6 @@ function App() {
         })
     
         indexRef.current = index;
-    }
-
-    function setNewPlaylist(newPlaylist) {
-
-        let formattedPlaylist = newPlaylist["files"].map(file => ({file: file, howl: null}));
-
-        setNowPlayingFolder(newPlaylist.folderName);
-        playlistRef.current = formattedPlaylist;
-        indexRef.current = 0;
     }
 
     function pause() {
@@ -195,7 +215,9 @@ function App() {
     function skipTo(index) {
         
         if (playlistRef.current[indexRef.current].howl) {
-            playlistRef.current[indexRef.current].howl.stop();
+            let playing = playlistRef.current[indexRef.current];
+            savePlaybackPosition(playing.file, playing.howl.seek());
+            playing.howl.stop();
         }
 
         play(index);
@@ -255,6 +277,7 @@ function App() {
                             type="range" min="0" max="1" step="0.01" 
                             value={playerVolume} 
                             id="volume-slider"
+                            ref={playerVolumeRef}
                         />
                     </div>
                 </div>
