@@ -22,7 +22,18 @@ let applicationMenuTemplate = [
         {label: "Show Library",
           click: toggleLibraryView,
           id: "library-view-status",
-          type: 'checkbox'},
+          type: "checkbox"},
+        {label: "Theme",
+          submenu: [
+            {label: "Light",
+            id: "light",
+            type: "radio",
+            click: toggleTheme},
+            {label: "Dark",
+            id: "dark",
+            type: "radio",
+            click: toggleTheme}
+          ]},
         {label: "Reload",
           role: 'reload'}
     ]
@@ -65,6 +76,7 @@ ipcMain.on('prefs', (event, [action, prefs]) => { //Set listener for when prefer
   }
 
   if (action === "set") {
+    console.log(prefs)
     currentState.setPreferences(prefs);
   }
 })
@@ -95,7 +107,14 @@ function toggleLibraryView(item, browserWindow, event) {
   }
 }
 
+function toggleTheme(item, browserWindow, event) {
+
+  currentState.theme = item.id;
+  browserWindow.webContents.send("themeChange", item.id);
+}
+
 function chooseFolder(item, browserWindow, event) {
+  
   dialog.showOpenDialog({
     properties: ['openDirectory']
   }).then(result => {
@@ -107,7 +126,6 @@ function chooseFolder(item, browserWindow, event) {
     console.log(err)
   })
 }
-
 
 currentState.initializeState()
   .then((data) => {

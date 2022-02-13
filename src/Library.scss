@@ -1,0 +1,449 @@
+@use 'theme';
+
+.library.light {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    padding: 4px;
+    background: theme.$light-background-layer-1;
+    color: theme.$light-neutral-shade-3;
+    border-radius: 10px;
+    box-shadow: inset 1px 1px 4px 0px rgba(black, 0.13), 
+                1px 1px 1px 0px rgba(white, 1);
+    overflow-y: auto;
+    transition: background-color 0.2s ease;
+
+    .folder {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        border-radius: 10px;
+    
+        &::after {
+            position: absolute;
+            content: " ";
+            bottom: 0rem;
+            left:50%;
+            transform:translate(-50%, 0);
+            height: 2px;
+            width: 90%;
+            border-radius: 1px;
+            box-shadow: inset 1px 1px 4px 0px rgba(white, 0.2), 
+                        1px 1px 1px 0px rgba(black, 0.07);
+        }
+
+        &:last-child::after {
+            height: 0;
+        }
+
+        .folder-heading {
+            padding: 0rem;
+            display: grid;
+            grid-template-columns: 7rem auto;
+
+            &:hover {
+                background-color: rgba(black, 0.07);
+                background-image: url('./assets/arrow-down.svg');
+                background-size: 1rem;
+                background-position: bottom center;
+                background-repeat: no-repeat;
+
+                .folder-image.play::before,
+                .folder-image.pause::before {
+                    content: " ";
+                    position: absolute;
+                    z-index: 100;
+                    top: 0;
+                    left: 0;
+                    height: 100%;
+                    width: 100%;
+                    opacity: 0.6;
+                    filter: brightness(0.2);
+                    background: no-repeat center/100% url('./assets/squircle-background.svg');
+                }
+
+                .folder-image.play::after {
+                    content: " ";
+                    position: absolute;
+                    z-index: 100;
+                    top: 0;
+                    left: 0;
+                    height: 100%;
+                    width: 100%;
+                    background: no-repeat center/50% url('./assets/play-light.svg');
+                }
+            
+                .folder-image.pause::after {
+                    content: " ";
+                    position: absolute;
+                    z-index: 100;
+                    top: 0;
+                    left: 0;
+                    height: 100%;
+                    width: 100%;
+                    background: no-repeat center/50% url('./assets/pause-light.svg');
+                }
+            }
+        }
+
+        &:first-of-type .folder-heading {
+            border-radius: 10px 10px 0 0;
+        }
+
+        .folder-image {
+            //border: 1px solid red;
+            //border-radius: 1rem / 50%;
+            position: relative;
+            align-self: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 5rem;
+            width: 5rem;
+            cursor: pointer;
+            padding: 2px;
+            margin: 1rem;
+            background-image: url('./assets/squircle-background.svg');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: drop-shadow(5px 5px 0.4rem rgba(black, 0.13)) 
+                    drop-shadow(-5px -5px 0.4rem rgba(white, 1));
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                -webkit-mask-image: url('./assets/squircle-mask.svg');
+                mask-image: url('./assets/squircle-mask.svg');
+                mask-position: center;
+                -webkit-mask-position: center;
+                mask-repeat: no-repeat;
+                -webkit-mask-repeat: no-repeat;
+            }
+        }
+
+        .folder-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+    
+            .album-name {
+                color: theme.$light-neutral-shade-2;
+                font-family: 'Montserrat Medium', sans-serif;
+                font-size: 1.2rem;
+            }
+        
+            .album-artist {
+                color: theme.$light-neutral-shade-3;
+                font-family: 'Montserrat Regular', sans-serif;
+                font-size: 1rem;
+            }
+        }
+
+        &.expanded {
+            margin-bottom: 0.5rem;
+            background-color: theme.$light-background-layer-2;
+            box-shadow: inset 1px 1px 4px 0px rgba(theme.$theme-color, 0.27), 
+            1px 1px 1px 0px rgba(white, 1);
+
+            &::after {
+                height: 0;
+            }
+
+            .folder-heading {
+                border-radius: 10px 10px 0 0;
+
+                &:hover {
+                    background-color: rgba(black, 0.07);
+                    background-image: url('./assets/arrow-up.svg');
+                    background-size: 1rem;
+                    background-position: bottom center;
+                    background-repeat: no-repeat;
+                }
+            }
+        }
+    
+        .tracks {
+            margin-left: 5px;
+            margin-right: 2px;
+            margin-top: 0rem;
+            grid-column-start: 1;
+            grid-column-end: 4;
+            color: theme.$light-neutral-shade-3;
+            transition: all ease 0.2s; 
+
+            ul {
+                padding: 0;
+                margin: 0;
+                list-style: none;
+
+                li {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 0.1rem 0.5rem 0.1rem 1.2rem;
+                    border-top: 1px solid #CACDCF;
+
+                    &:hover {
+                        color: #000;
+                        background-color: darken(theme.$light-background-layer-2, 5);
+                        background-image: url('./assets/play.svg');
+                        background-size: 1rem;
+                        background-position: center left;
+                        background-repeat: no-repeat;
+                    }
+
+                    .track-name {
+                        color: theme.$light-neutral-shade-2;
+                        font-family: 'Montserrat Regular', sans-serif;
+                        font-size: 1rem;
+                    }
+                
+                    .library-track-length {
+                        margin-left: auto;
+                        font-variant-numeric: tabular-nums;
+                    }
+
+                    &.playing {
+                        font-family: 'Montserrat Medium';
+                        border-radius: 3px;
+                        margin-right: 2px;
+                        border-top: 0;
+                        color: theme.$light-neutral-shade-2;
+                        box-shadow: 1px 1px 4px 0px rgba(theme.$theme-color, 0.27);
+                        background-color: theme.$light-background-color;
+                    }
+
+                    &:last-of-type {
+                        border-radius: 0 0 10px 10px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.library.dark {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    padding: 4px;
+    background: theme.$dark-background-layer-1;
+    color: theme.$dark-neutral-shade-2;
+    border-radius: 10px;
+    box-shadow: inset 1px 1px 4px 0px rgba(black, 1), 
+                1px 1px 1px 0px rgba(white, 0.12);
+    overflow-y: auto;
+    transition: background-color 0.2s ease;
+
+    .folder {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        border-radius: 10px;
+    
+        &::after {
+            position: absolute;
+            content: " ";
+            bottom: 0rem;
+            left:50%;
+            transform:translate(-50%, 0);
+            height: 2px;
+            width: 90%;
+            border-radius: 1px;
+            box-shadow: inset 1px 1px 4px 0px rgba(white, 0.2), 
+                        1px 1px 1px 0px rgba(black, 0.07);
+        }
+
+        &:last-child::after {
+            height: 0;
+        }
+
+        .folder-heading {
+            padding: 0rem;
+            display: grid;
+            grid-template-columns: 7rem auto;
+
+            &:hover {
+                background-color: lighten(theme.$dark-background-layer-1, 6);
+                background-image: url('./assets/arrow-down.svg');
+                background-size: 1rem;
+                background-position: bottom center;
+                background-repeat: no-repeat;
+
+                .folder-image.play::before,
+                .folder-image.pause::before {
+                    content: " ";
+                    position: absolute;
+                    z-index: 100;
+                    top: 0;
+                    left: 0;
+                    height: 100%;
+                    width: 100%;
+                    opacity: 0.6;
+                    filter: brightness(0.2);
+                    background: no-repeat center/100% url('./assets/squircle-background.svg');
+                }
+
+                .folder-image.play::after {
+                    content: " ";
+                    position: absolute;
+                    z-index: 100;
+                    top: 0;
+                    left: 0;
+                    height: 100%;
+                    width: 100%;
+                    background: no-repeat center/50% url('./assets/play-light.svg');
+                }
+            
+                .folder-image.pause::after {
+                    content: " ";
+                    position: absolute;
+                    z-index: 100;
+                    top: 0;
+                    left: 0;
+                    height: 100%;
+                    width: 100%;
+                    background: no-repeat center/50% url('./assets/pause-light.svg');
+                }
+            }
+        }
+
+        &:first-of-type .folder-heading {
+            border-radius: 10px 10px 0 0;
+        }
+
+        .folder-image {
+            position: relative;
+            align-self: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 5rem;
+            width: 5rem;
+            cursor: pointer;
+            padding: 2px;
+            margin: 1rem;
+            background-image: url('./assets/squircle-background-dark.svg');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: drop-shadow(5px 5px 0.4rem rgba(black, 1)) 
+                    drop-shadow(-5px -5px 0.4rem rgba(white, 0.2));
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: fill;
+                -webkit-mask-image: url('./assets/squircle-mask.svg');
+                mask-image: url('./assets/squircle-mask.svg');
+                mask-position: center;
+                -webkit-mask-position: center;
+                mask-repeat: no-repeat;
+                -webkit-mask-repeat: no-repeat;
+            }
+        }
+
+        .folder-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+    
+            .album-name {
+                color: theme.$dark-neutral-shade-2;
+                font-family: 'Montserrat Medium', sans-serif;
+                font-size: 1.2rem;
+            }
+        
+            .album-artist {
+                color: theme.$dark-neutral-shade-1;
+                font-family: 'Montserrat Regular', sans-serif;
+                font-size: 1rem;
+            }
+        }
+
+        &.expanded {
+            margin-bottom: 0.5rem;
+            background-color: theme.$dark-background-layer-2;
+            color: #000;
+            box-shadow: inset 1px 1px 4px 0px rgba(theme.$theme-color, 0.3), 
+                        1px 1px 1px 0px rgba(white, 0.13);
+
+            &::after {
+                height: 0;
+            }
+
+            .folder-heading {
+                border-radius: 10px 10px 0 0;
+
+                &:hover {
+                    background-color: lighten(theme.$dark-background-layer-2, 6);
+                    background-image: url('./assets/arrow-up.svg');
+                    background-size: 1rem;
+                    background-position: bottom center;
+                    background-repeat: no-repeat;
+                }
+            }
+        }
+    
+        .tracks {
+            margin-left: 5px;
+            margin-right: 2px;
+            margin-top: 0rem;
+            grid-column-start: 1;
+            grid-column-end: 4;
+            color: theme.$dark-neutral-shade-1;;
+            transition: all ease 0.2s; 
+
+            ul {
+                padding: 0;
+                margin: 0;
+                list-style: none;
+
+                li {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 0.1rem 0.5rem 0.1rem 1.2rem;
+                    border-top: 1px solid lighten(theme.$dark-background-layer-1, 3);
+
+                    &:hover {
+                        background-color: lighten(theme.$dark-background-layer-2, 6);
+                        background-image: url('./assets/play.svg');
+                        background-size: 1rem;
+                        background-position: center left;
+                        background-repeat: no-repeat;
+                    }
+
+                    .track-name {
+                        color: theme.$dark-neutral-shade-2;
+                        font-family: 'Montserrat Regular', sans-serif;
+                        font-size: 1rem;
+                    }
+                
+                    .library-track-length {
+                        margin-left: auto;
+                        font-variant-numeric: tabular-nums;
+                    }
+
+                    &.playing {
+                        font-family: 'Montserrat Medium';
+                        border-radius: 3px;
+                        margin-right: 2px;
+                        border-top: 0;
+                        color: theme.$dark-neutral-shade-3;
+                        box-shadow: 1px 1px 4px 0px rgba(theme.$theme-color, 0.3);
+                        background-color: theme.$dark-background-color;
+                    }
+
+                    &:last-of-type {
+                        border-radius: 0 0 10px 10px;
+                    }
+                }
+            }
+        }
+    }
+}

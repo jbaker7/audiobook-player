@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import Library from './Library.jsx';
 
-import './app.css';
+import './app.scss';
 import playButton from './assets/play.svg';
 import pauseButton from './assets/pause.svg';
 import previousButton from './assets/previous.svg';
@@ -21,6 +21,7 @@ const {Howl, Howler} = window.require('howler');
 function App() {
 
     const [libraryFolder, setLibraryFolder] = useState();
+    const [theme, setTheme] = useState("light");
 
     const [nowPlayingFolder, setNowPlayingFolder] = useState();
     const [nowPlayingArtist, setNowPlayingArtist] = useState("");
@@ -53,6 +54,7 @@ function App() {
             setLibraryFolder(preferences.libraryFolder);        //Then load them into state.
             setPlayerVolume(preferences.playerVolume);
             setLibraryIsVisible(preferences.libraryIsVisible);
+            setTheme(preferences.theme);
         });
 
         ipcRenderer.on("libraryChange", (event, arg) => {
@@ -63,9 +65,13 @@ function App() {
             setLibraryIsVisible(arg)
         });
 
-        ipcRenderer.on("closing", (event, arg) => 
-            event.sender.send("prefs", ["set", {"playerVolume": parseInt(playerVolumeRef.current.value)}])
-        );
+        ipcRenderer.on("themeChange", (event, arg) => {
+            setTheme(arg)
+        });
+
+        ipcRenderer.on("closing", (event, arg) => {
+            event.sender.send("prefs", ["set", {"playerVolume": parseFloat(playerVolumeRef.current.value)}]);
+        });
 
     }, [])
 
@@ -258,15 +264,15 @@ function App() {
     }
 
     let playbackPositionStyle = {
-        background: `linear-gradient(to right, #ef7049 0%, #ef7049 ${(nowPlayingPosition / nowPlayingDuration) * 100}%, #DEE1E3 ${(nowPlayingPosition / nowPlayingDuration) * 100}%, #DEE1E3 100%)`
+        background: `linear-gradient(to right, #ef7049 0%, #ef7049 ${(nowPlayingPosition / nowPlayingDuration) * 100}%, ${theme === "light" ? "#dee1e6" : "#24211b"} ${(nowPlayingPosition / nowPlayingDuration) * 100}%, ${theme === "light" ? "#dee1e6" : "#24211b"} 100%)`
     }
 
     let volumePositionStyle = {
-        background: `linear-gradient(to right, #ef7049 0%, #ef7049 ${playerVolume * 100}%, #DEE1E3 ${playerVolume * 100}%, #DEE1E3 100%)`
+        background: `linear-gradient(to right, #ef7049 0%, #ef7049 ${playerVolume * 100}%, ${theme === "light" ? "#dee1e6" : "#24211b"} ${playerVolume * 100}%, ${theme === "light" ? "#dee1e6" : "#24211b"} 100%)`
     }
 
     return (
-        <div className="main-window">
+        <div className={`main-window ${theme}`}>
             <div className="main-player">
                 <div className={`volume-control ${!volumeControlIsVisible ? "hidden" : null}`}>
                     <span onClick={toggleVolumeControl}><img src={playerVolume > 0 ? volumeButton : volumeMutedButton} /></span>
@@ -275,7 +281,7 @@ function App() {
                             onChange={handleVolumeChange}
                             style={volumePositionStyle} 
                             type="range" min="0" max="1" step="0.01" 
-                            value={playerVolume} 
+                            value={playerVolume}
                             id="volume-slider"
                             ref={playerVolumeRef}
                         />
@@ -298,7 +304,6 @@ function App() {
                         type="range" min="0" step="1" 
                         max={nowPlayingDuration} 
                         value={nowPlayingPosition} 
-                        className="track-position-slider" 
                         id="track-position" />
                     <label htmlFor="track-position">{formatTime(nowPlayingDuration)}</label>
                 </div>
@@ -329,6 +334,7 @@ function App() {
 
            {libraryIsVisible ?
             <Library 
+                theme={theme}
                 libraryContents={libraryContents}
                 nowPlayingFolder={nowPlayingFolder}
                 nowPlayingIndex={indexRef.current}

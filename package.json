@@ -74,8 +74,11 @@
     "electron": "17.0.0",
     "file-loader": "^6.2.0",
     "node-loader": "^2.0.0",
+    "sass": "^1.49.7",
+    "sass-loader": "^12.4.0",
     "style-loader": "^3.3.1",
-    "svg-url-loader": "^7.1.1"
+    "svg-url-loader": "^7.1.1",
+    "webpack": "^5.68.0"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",

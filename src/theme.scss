@@ -1,0 +1,17 @@
+$theme-color: #EF472F;
+
+$light-background-color: #E7E9ED;
+$light-background-floating-layer: lighten($light-background-color, 2);
+$light-background-layer-1: darken($light-background-color, 3);
+$light-background-layer-2: darken($light-background-color, 6);
+$light-neutral-shade-1: lighten(black, 25);
+$light-neutral-shade-2: lighten(black, 30);
+$light-neutral-shade-3: lighten(black, 40);
+
+$dark-background-color: #202021;
+$dark-background-floating-layer: lighten($dark-background-color, 4);
+$dark-background-layer-1: darken($dark-background-color, 4);
+$dark-background-layer-2: darken($dark-background-color, 6);
+$dark-neutral-shade-1: darken(white, 40);
+$dark-neutral-shade-2: darken(white, 30);
+$dark-neutral-shade-3: darken(white, 25);

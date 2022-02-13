@@ -1,11 +1,11 @@
 import React from 'react';
 import LibraryFolder from './LibraryFolder.jsx';
-import './Library.css';
+import './Library.scss';
 
-function Library({libraryContents, playFunction, nowPlayingFolder, nowPlayingIndex}) {
+function Library({theme, libraryContents, playFunction, nowPlayingFolder, nowPlayingIndex}) {
 
     return (
-        <div className="library">
+        <div className={`library ${theme}`}>
             {
                 libraryContents ? 
                 libraryContents.map((folder, index) => {

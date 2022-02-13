@@ -20,6 +20,13 @@ class StateManager {
         this.updateStateFile();
     }
 
+    get theme() {
+        return this.currentState.preferences.theme;
+    }
+    set theme(theme) {
+        this.currentState.preferences.theme = theme;
+        this.updateStateFile();
+    }
 
     get libraryIsVisible() {
         return this.currentState.preferences.libraryIsVisible;
@@ -28,7 +35,6 @@ class StateManager {
         this.currentState.preferences.libraryIsVisible = isVisible;
         this.updateStateFile();
     }
-
 
     get libraryFolder() {
         return this.currentState.preferences.libraryFolder;
@@ -77,7 +83,8 @@ class StateManager {
                 preferences: {
                     libraryFolder: null,
                     playerVolume: 0.4,
-                    libraryIsVisible: true
+                    libraryIsVisible: true,
+                    theme: "light"
                 },
                 playBackPositions: {},
             }
