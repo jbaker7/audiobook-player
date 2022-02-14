@@ -40,6 +40,8 @@ let applicationMenuTemplate = [
   }
 ];
 
+let readyToClose = 0;
+
 const createWindow = () => {
   // Create the browser window.
   let windowWidth = 800;
@@ -65,7 +67,10 @@ const createWindow = () => {
   menu.getMenuItemById("library-view-status").checked = currentState.libraryIsVisible;
 
   mainWindow.on('close', (e) => { //Let renderer know it's closing so it can send back preferences.
-    mainWindow.webContents.send('closing', 'Application is closing.') 
+    if (readyToClose === 0) {
+        e.preventDefault();
+        mainWindow.webContents.send('closing', 'Application is closing.'); 
+    }
   })
 };
 
@@ -76,13 +81,11 @@ ipcMain.on('prefs', (event, [action, prefs]) => { //Set listener for when prefer
   }
 
   if (action === "set") {
-    console.log(prefs)
     currentState.setPreferences(prefs);
   }
 })
 
 ipcMain.on('playback', (event, [file, position]) => { //Set listener for when playback position should be updated.
-  
   if (typeof position === "number") {
     currentState.setPlaybackPosition(file, position);
   }
@@ -92,6 +95,17 @@ ipcMain.on('playback', (event, [file, position]) => { //Set listener for when pl
   }
 })
 
+ipcMain.on('closed', (event, [file, position, prefs]) => {
+
+  readyToClose = 1;
+  if (typeof position === "number") {
+    currentState.setPlaybackPosition(file, position);
+  }
+  currentState.setPreferences(prefs);
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+})
 
 function toggleLibraryView(item, browserWindow, event) {
 

@@ -70,7 +70,15 @@ function App() {
         });
 
         ipcRenderer.on("closing", (event, arg) => {
-            event.sender.send("prefs", ["set", {"playerVolume": parseFloat(playerVolumeRef.current.value)}]);
+            
+            let positionInfo = {};
+            if (playlistRef.current && indexRef.current) {
+                positionInfo.file  = playlistRef.current[indexRef.current].file;
+                positionInfo.position  = playlistRef.current[indexRef.current].howl.seek();
+            }
+            let prefs = {"playerVolume": parseFloat(playerVolumeRef.current.value)};
+            
+            event.sender.send("closed", [positionInfo.file, positionInfo.position, prefs]);
         });
 
     }, [])
@@ -121,12 +129,12 @@ function App() {
                 }
             }
             setNewPlaylist(libraryContents.find(folders => folders.folderName === folder));
-            if(track) {skipTo(track);}
+            if(track !== "undefined") {skipTo(track);}
                 else {skipTo(0);}
         }
 
         else {
-            if(track) {skipTo(track);}
+            if(track !== "undefined") {skipTo(track);}
             else {
                 if (isPlaying === true) {
                     pause();
@@ -171,7 +179,9 @@ function App() {
                     }
                     setIsPlaying(true);
                     setNowPlayingDuration(sound.duration());
-                    nowPlayingInterval = setInterval(step, 1000)
+                    nowPlayingInterval = setInterval(step, 1000);
+
+                    Howler.volume(playerVolume);
                 },
                 onend: function() {
                     skip('next');

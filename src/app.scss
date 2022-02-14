@@ -143,11 +143,12 @@
             justify-content: center;
             margin-top: auto;
             margin-bottom: 2rem;
-            height: 12rem;
-            width: 12rem;
+            max-height: 12rem;
+            max-width: 12rem;
             padding: 0.5rem;
             transition: background-image 0.2s ease;
-            background-image: url('./assets/squircle-background.svg');
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(186,190,194,1) 0%, rgba(243,245,247,1) 100%);
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
@@ -155,15 +156,11 @@
                     drop-shadow(-5px -5px 10px rgba(white, 1));
         
             img {
-                width: 12rem;
-                height: 12rem;
-                object-fit: fill;
-                -webkit-mask-image: url('./assets/squircle-mask.svg');
-                mask-image: url('./assets/squircle-mask.svg');
-                mask-position: center;
-                -webkit-mask-position: center;
-                mask-repeat: no-repeat;
-                -webkit-mask-repeat: no-repeat;
+                max-height: 100%;
+                max-width: 100%;
+                height: auto;
+                width: auto;
+                border-radius: 12px;
             }
         }
 
@@ -446,27 +443,24 @@
             justify-content: center;
             margin-top: auto;
             margin-bottom: 2rem;
-            height: 12rem;
-            width: 12rem;
+            max-height: 12rem;
+            max-width: 12rem;
             padding: 0.5rem;
             transition: background-image 0.2s ease;
-            background-image: url('./assets/squircle-background-dark.svg');
-            background-size: contain;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(20,20,21,1) 0%, rgba(37,37,39,1) 100%);
+            background-size: 100% 100%;
             background-position: center;
             background-repeat: no-repeat;
             filter: drop-shadow(5px 5px 10px rgba(black, 1)) 
                     drop-shadow(-5px -5px 10px rgba(white, 0.20));
         
             img {
-                width: 12rem;
-                height: 12rem;
-                object-fit: fill;
-                -webkit-mask-image: url('./assets/squircle-mask.svg');
-                mask-image: url('./assets/squircle-mask.svg');
-                mask-position: center;
-                -webkit-mask-position: center;
-                mask-repeat: no-repeat;
-                -webkit-mask-repeat: no-repeat;
+                max-height: 100%;
+                max-width: 100%;
+                height: auto;
+                width: auto;
+                border-radius: 12px;
             }
         }
 
