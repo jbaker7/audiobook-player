@@ -15,6 +15,7 @@ function LibraryFolder({folderContents, playFunction, nowPlaying}) {
     }
 
     useEffect(() => {
+        
         let metadata = mm.parseFile(folderContents.files[0])
         .then(meta => {
             setFolderAuthor(meta.common.albumartist || meta.common.artist);
@@ -47,7 +48,7 @@ function LibraryFolder({folderContents, playFunction, nowPlaying}) {
                                     playlistIndex={index}
                                     nowPlaying={index == nowPlaying ? true : false}
                                     file={file} 
-                                    key={`${file.slice(0, 4)}${index}`}
+                                    key={file}
                                 />
                             ))
                         }

@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 
-const fs = window.require('fs/promises');
+const fs = window.require('fs');
 const path = window.require('path');
 
 function useLibrary(libraryFolder) {
@@ -12,42 +12,34 @@ function useLibrary(libraryFolder) {
 
     useEffect(() => {
         if (libraryFolder) {
-            let directoryList = fs.readdir(libraryFolder, {withFileTypes: true})
-            .then(allEntries => allEntries.filter(file => file.isDirectory()).map(file => file.name)) //Get all primary folders in library
-            .then(allDirectories => getAllFileLists(allDirectories)) //Get all files in each library folder
-            .then(allFiles => allFiles.filter(obj => obj !== null)) //Remove any empty folders
-            .then(filteredFiles => setLibraryContents(filteredFiles))
+            scanLibrary(libraryFolder)
+            .then(contents => setLibraryContents(contents))
         }
     }, [libraryFolder]);
 
 
-    async function getAllFileLists(folders) {
+    async function scanLibrary(folder, files = []) {
+        let directoryList = fs.readdirSync(folder, {withFileTypes: true});
 
-        let folderFileObjArray = await Promise.all(folders.map(async folder => 
-            {
-                let fileArray = await getFileList(folder);
-                if (fileArray.length) {
-                    return ({folderName: folder,
-                        files: fileArray});
-                } 
-                else {return null;}
+        await directoryList.forEach(async (file, index) => {
+            if (file.isDirectory()) {                                       // If there are subdirectories in the current folder,
+                await scanLibrary(path.join(folder, file.name), files);     // resursively scan them too.
             }
-        ))
-        return folderFileObjArray;
+        })
+
+            // Filter out directories and invalid file types from the file list.
+        let validFiles = directoryList.filter(file => !file.isDirectory() && validFormats.includes(path.extname(file.name).toLowerCase()));
+        
+            // Attach full file path to each file, then sort final list.
+        let sortedFiles = validFiles.map(file => path.join(folder, file.name)).sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
+        if (sortedFiles.length) {
+            let fileObj = {folderName: folder.split(path.sep)[folder.split(path.sep).length-1], files: sortedFiles};
+            files.push(fileObj);
+        }
+        return files;
     }
 
-
-    async function getFileList(folder) {
-
-        let fileList = fs.readdir(path.join(libraryFolder, folder), {withFileTypes: true})
-            .then(allEntries => allEntries.filter(file => file.isFile()).map(file => file.name)) //Use only files, not directories
-            .then(onlyFiles => onlyFiles.filter(file => validFormats.includes(path.extname(file).toLowerCase()))) //Use only valid filetypes
-            .then(validFiles => validFiles.sort((a, b) => a.localeCompare(b, undefined, {numeric: true}))) //Sort remaining items
-            .then(sortedFiles => sortedFiles.map(file => path.join(libraryFolder, folder, file)))
-        return fileList;
-    }
-
-    return [libraryContents];
+    return libraryContents;
 }
 
 export default useLibrary;

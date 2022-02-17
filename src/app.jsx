@@ -23,7 +23,7 @@ function App() {
     const [libraryFolder, setLibraryFolder] = useState();
     const [theme, setTheme] = useState("light");
 
-    const [nowPlayingFolder, setNowPlayingFolder] = useState();
+    const [nowPlayingFolder, setNowPlayingFolder] = useState("");
     const [nowPlayingArtist, setNowPlayingArtist] = useState("");
     const [nowPlayingTrack, setNowPlayingTrack] = useState("");
     const [nowPlayingCover, setNowPlayingCover] = useState();
@@ -44,7 +44,7 @@ function App() {
     const [volumeControlIsVisible, setVolumeControlIsVisible] = useState(false);
     const [libraryIsVisible, setLibraryIsVisible] = useState(true);
 
-    const [libraryContents] = useLibrary(libraryFolder);
+    const libraryContents = useLibrary(libraryFolder);
 
     useEffect(() => {
 
@@ -129,12 +129,13 @@ function App() {
                 }
             }
             setNewPlaylist(libraryContents.find(folders => folders.folderName === folder));
-            if(track !== "undefined") {skipTo(track);}
+
+            if(track !== undefined) {skipTo(track);}
                 else {skipTo(0);}
         }
 
         else {
-            if(track !== "undefined") {skipTo(track);}
+            if(track !== undefined) {skipTo(track);}
             else {
                 if (isPlaying === true) {
                     pause();
@@ -172,16 +173,18 @@ function App() {
                 html5: true,
                 rate: playbackSpeed,
                 onplay: function() {
-                    // Check if there is already a saved start position. If so, begin playback there.
-                    let startPosition = ipcRenderer.sendSync("playback", [playlistRef.current[index].file]);
-                    if(startPosition) {
-                        seek(startPosition);
-                    }
                     setIsPlaying(true);
                     setNowPlayingDuration(sound.duration());
                     nowPlayingInterval = setInterval(step, 1000);
 
                     Howler.volume(playerVolume);
+                },
+                onload: function() {
+                    // Check if there is already a saved start position. If so, begin playback there.
+                    let startPosition = ipcRenderer.sendSync("playback", [playlistRef.current[index].file]);
+                    if(startPosition) {
+                        seek(startPosition);
+                    }
                 },
                 onend: function() {
                     skip('next');
@@ -345,7 +348,7 @@ function App() {
            {libraryIsVisible ?
             <Library 
                 theme={theme}
-                libraryContents={libraryContents}
+                library={libraryContents}
                 nowPlayingFolder={nowPlayingFolder}
                 nowPlayingIndex={indexRef.current}
                 playFunction={handlePlayPause} 

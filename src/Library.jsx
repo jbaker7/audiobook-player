@@ -2,25 +2,24 @@ import React from 'react';
 import LibraryFolder from './LibraryFolder.jsx';
 import './Library.scss';
 
-function Library({theme, libraryContents, playFunction, nowPlayingFolder, nowPlayingIndex}) {
+function Library({theme, library, playFunction, nowPlayingFolder, nowPlayingIndex}) {
 
     return (
         <div className={`library ${theme}`}>
             {
-                libraryContents ? 
-                libraryContents.map((folder, index) => {
+                library ? 
+                library.map((folder, index) => {
                     return (
                         <LibraryFolder 
                             nowPlaying={folder.folderName === nowPlayingFolder ? nowPlayingIndex : null}
                             folderContents={folder}
                             playFunction={playFunction}
-                            key={`${folder["folderName"].slice(0, 4)}${index}`} 
+                            key={folder["folderName"]} 
                         />  
                     )
                 })
                 : null
             }
-            
         </div>
     )
 }

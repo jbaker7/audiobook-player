@@ -6,6 +6,7 @@
     flex-direction: column;
     margin: 1rem;
     padding: 4px;
+    padding-right: 1px;
     background: theme.$light-background-layer-1;
     color: theme.$light-neutral-shade-3;
     border-radius: 10px;
@@ -14,11 +15,27 @@
     overflow-y: auto;
     transition: background-color 0.2s ease;
 
+    &::-webkit-scrollbar {
+        width: 10px;
+    }
+    &::-webkit-scrollbar-thumb {
+        border: 3px solid rgba(0, 0, 0, 0);   
+        background-clip: padding-box;  
+        border-radius: 5px; 
+        -webkit-border-radius: 5px;   
+        background-color: rgba(0, 0, 0, 0.25);
+    }
+    &::-webkit-scrollbar-track {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
     .folder {
         position: relative;
         display: flex;
         flex-direction: column;
         border-radius: 10px;
+        padding-right: 3px;
     
         &::after {
             position: absolute;
@@ -92,6 +109,10 @@
             border-radius: 10px 10px 0 0;
         }
 
+        &:last-of-type .folder-heading {
+            border-radius: 0 0 10px 10px;
+        }
+
         .folder-image {
             position: relative;
             align-self: center;
@@ -140,6 +161,7 @@
         }
 
         &.expanded {
+            padding-right: 0px;
             margin-bottom: 0.5rem;
             background-color: theme.$light-background-layer-2;
             box-shadow: inset 1px 1px 4px 0px rgba(theme.$theme-color, 0.27), 
@@ -163,7 +185,7 @@
         }
     
         .tracks {
-            margin-left: 5px;
+            margin-left: 2px;
             margin-right: 2px;
             margin-top: 0rem;
             grid-column-start: 1;
@@ -188,7 +210,7 @@
                         background-color: darken(theme.$light-background-layer-2, 5);
                         background-image: url('./assets/play.svg');
                         background-size: 1rem;
-                        background-position: center left;
+                        background-position: center left 2px;
                         background-repeat: no-repeat;
                     }
 
@@ -207,6 +229,7 @@
                         font-family: 'Montserrat Medium';
                         border-radius: 3px;
                         margin-right: 2px;
+                        margin-left: 2px;
                         border-top: 0;
                         color: theme.$light-neutral-shade-2;
                         box-shadow: 1px 1px 4px 0px rgba(theme.$theme-color, 0.27);
@@ -233,6 +256,7 @@
     flex-direction: column;
     margin: 1rem;
     padding: 4px;
+    padding-right: 1px;
     background: theme.$dark-background-layer-1;
     color: theme.$dark-neutral-shade-2;
     border-radius: 10px;
@@ -241,11 +265,27 @@
     overflow-y: auto;
     transition: background-color 0.2s ease;
 
+    &::-webkit-scrollbar {
+        width: 10px;
+    }
+    &::-webkit-scrollbar-thumb {
+        border: 3px solid rgba(0, 0, 0, 0);   
+        background-clip: padding-box;  
+        border-radius: 5px; 
+        -webkit-border-radius: 5px;   
+        background-color: rgba(white, 0.25);
+    }
+    &::-webkit-scrollbar-track {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
     .folder {
         position: relative;
         display: flex;
         flex-direction: column;
         border-radius: 10px;
+        padding-right: 3px;
     
         &::after {
             position: absolute;
@@ -319,6 +359,10 @@
             border-radius: 10px 10px 0 0;
         }
 
+        &:last-of-type .folder-heading {
+            border-radius: 0 0 10px 10px;
+        }
+
         .folder-image {
             position: relative;
             align-self: center;
@@ -367,6 +411,7 @@
         }
 
         &.expanded {
+            padding-right: 0px;
             margin-bottom: 0.5rem;
             background-color: theme.$dark-background-layer-2;
             color: #000;
@@ -391,7 +436,7 @@
         }
     
         .tracks {
-            margin-left: 5px;
+            margin-left: 2px;
             margin-right: 2px;
             margin-top: 0rem;
             grid-column-start: 1;
@@ -415,7 +460,7 @@
                         background-color: lighten(theme.$dark-background-layer-2, 6);
                         background-image: url('./assets/play.svg');
                         background-size: 1rem;
-                        background-position: center left;
+                        background-position: center left 2px;
                         background-repeat: no-repeat;
                     }
 
@@ -434,6 +479,7 @@
                         font-family: 'Montserrat Medium';
                         border-radius: 3px;
                         margin-right: 2px;
+                        margin-left: 2px;
                         border-top: 0;
                         color: theme.$dark-neutral-shade-3;
                         box-shadow: 1px 1px 4px 0px rgba(theme.$theme-color, 0.3);
